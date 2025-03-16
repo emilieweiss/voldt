@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:voldt/core/theme/theme.dart';
-import 'package:voldt/features/auth/presentation/pages/signup_page.dart';
+import 'package:voldt/core/navigation/app_router.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,11 +11,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
+      routerConfig: appRouter,
       debugShowCheckedModeBanner: false,
       title: 'Voldt App',
       theme: AppTheme.lightThemeMode,
-      home: const SignUpPage(),
     );
   }
 }

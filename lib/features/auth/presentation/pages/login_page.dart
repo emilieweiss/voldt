@@ -4,24 +4,22 @@ import 'package:voldt/core/theme/app_pallete.dart';
 import 'package:voldt/features/auth/presentation/widgets/auth_field.dart';
 import 'package:voldt/features/auth/presentation/widgets/auth_gradient_button.dart';
 
-class SignUpPage extends StatefulWidget {
-  const SignUpPage({super.key});
+class LogInPage extends StatefulWidget {
+  const LogInPage({super.key});
 
   @override
-  State<SignUpPage> createState() => _SignUpPageState();
+  State<LogInPage> createState() => _SignUpPageState();
 }
 
-class _SignUpPageState extends State<SignUpPage> {
+class _SignUpPageState extends State<LogInPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  final nameController = TextEditingController();
   final formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
-    nameController.dispose();
     super.dispose();
   }
 
@@ -36,7 +34,7 @@ class _SignUpPageState extends State<SignUpPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Opret profil',
+                'Log ind',
                 style: TextStyle(
                   fontSize: 50,
                   fontWeight: FontWeight.bold,
@@ -44,8 +42,6 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
               ),
               const SizedBox(height: 50),
-              AuthField(hintText: 'Navn', controller: nameController),
-              const SizedBox(height: 20),
               AuthField(hintText: 'Email', controller: emailController),
               const SizedBox(height: 20),
               AuthField(
@@ -54,19 +50,19 @@ class _SignUpPageState extends State<SignUpPage> {
                 isPassword: true,
               ),
               const SizedBox(height: 20),
-              const AuthGradientButton(name: 'Opret profil'),
+              const AuthGradientButton(name: 'Log ind'),
               const SizedBox(height: 20),
               GestureDetector(
                 onTap: () {
-                  context.go('/');
+                  context.go('/signup');
                 },
                 child: RichText(
                   text: TextSpan(
-                    text: 'Har du allerede en profil? ',
+                    text: 'Har du ikke en profil? ',
                     style: TextStyle(color: AppPallete.black),
                     children: [
                       TextSpan(
-                        text: 'Log ind',
+                        text: 'Opret profil',
                         style: Theme.of(
                           context,
                         ).textTheme.titleMedium?.copyWith(
