@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:voldt/core/theme/theme.dart';
 import 'package:voldt/core/navigation/app_router.dart';
+import 'package:voldt/core/secrets/app_secrets.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Supabase.initialize(
+    url: AppSecrets.supabaseUrl,
+    anonKey: AppSecrets.supabaseAnonKey,
+  );
   runApp(const MyApp());
 }
 
