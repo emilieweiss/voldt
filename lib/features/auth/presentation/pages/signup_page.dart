@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:voldt/core/theme/app_pallete.dart';
+import 'package:voldt/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:voldt/features/auth/presentation/widgets/auth_field.dart';
 import 'package:voldt/features/auth/presentation/widgets/auth_gradient_button.dart';
 
@@ -54,9 +56,15 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                   ),
                   const SizedBox(height: 50),
-                  AuthField(hintText: 'Navn', controller: nameController),
+                  AuthField(
+                    hintText: 'Navn',
+                    controller: nameController,
+                  ),
                   const SizedBox(height: 20),
-                  AuthField(hintText: 'Email', controller: emailController),
+                  AuthField(
+                    hintText: 'Email',
+                    controller: emailController,
+                  ),
                   const SizedBox(height: 20),
                   AuthField(
                     hintText: 'Kodeord',
@@ -64,7 +72,25 @@ class _SignUpPageState extends State<SignUpPage> {
                     isPassword: true,
                   ),
                   const SizedBox(height: 20),
-                  const AuthGradientButton(name: 'Opret profil'),
+                  AuthGradientButton(
+                    name: 'Opret profil',
+                    onPressed: () {
+                      if (formKey.currentState!
+                          .validate()) {
+                        context.read<AuthBloc>().add(
+                          AuthSignUp(
+                            email:
+                                emailController.text.trim(),
+                            password:
+                                passwordController.text
+                                    .trim(),
+                            name:
+                                nameController.text.trim(),
+                          ),
+                        );
+                      }
+                    },
+                  ),
                   const SizedBox(height: 20),
                   GestureDetector(
                     onTap: () {
@@ -73,16 +99,21 @@ class _SignUpPageState extends State<SignUpPage> {
                     child: RichText(
                       text: TextSpan(
                         text: 'Har du allerede en profil? ',
-                        style: TextStyle(color: AppPallete.black),
+                        style: TextStyle(
+                          color: AppPallete.black,
+                        ),
                         children: [
                           TextSpan(
                             text: 'Log ind',
-                            style: Theme.of(
-                              context,
-                            ).textTheme.titleMedium?.copyWith(
-                              color: AppPallete.woltBlue,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                  color:
+                                      AppPallete.woltBlue,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                ),
                           ),
                         ],
                       ),

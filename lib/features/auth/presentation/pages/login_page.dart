@@ -42,7 +42,10 @@ class _SignUpPageState extends State<LogInPage> {
                 ),
               ),
               const SizedBox(height: 50),
-              AuthField(hintText: 'Email', controller: emailController),
+              AuthField(
+                hintText: 'Email',
+                controller: emailController,
+              ),
               const SizedBox(height: 20),
               AuthField(
                 hintText: 'Kodeord',
@@ -50,7 +53,10 @@ class _SignUpPageState extends State<LogInPage> {
                 isPassword: true,
               ),
               const SizedBox(height: 20),
-              const AuthGradientButton(name: 'Log ind'),
+              AuthGradientButton(
+                name: 'Log ind',
+                onPressed: () {},
+              ),
               const SizedBox(height: 20),
               GestureDetector(
                 onTap: () {
@@ -59,7 +65,9 @@ class _SignUpPageState extends State<LogInPage> {
                 child: RichText(
                   text: TextSpan(
                     text: 'Har du ikke en profil? ',
-                    style: TextStyle(color: AppPallete.black),
+                    style: TextStyle(
+                      color: AppPallete.black,
+                    ),
                     children: [
                       TextSpan(
                         text: 'Opret profil',
