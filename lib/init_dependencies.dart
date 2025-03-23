@@ -10,7 +10,6 @@ import 'package:voldt/features/auth/presentation/bloc/auth_bloc.dart';
 final serviceLocator = GetIt.instance;
 
 Future<void> initDependencies() async {
-  _initAuth();
   final supabase = await Supabase.initialize(
     url: AppSecrets.supabaseUrl,
     anonKey: AppSecrets.supabaseAnonKey,
@@ -18,6 +17,7 @@ Future<void> initDependencies() async {
   serviceLocator.registerLazySingleton(
     () => supabase.client,
   );
+  _initAuth();
 }
 
 void _initAuth() {

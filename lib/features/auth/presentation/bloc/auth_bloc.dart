@@ -12,16 +12,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     : _userSignUp = userSignUp,
       super(AuthInitial()) {
     on<AuthSignUp>((event, emit) async {
+      emit(AuthLoading());
+
       final res = await _userSignUp(
         UserSignUpParams(
-          email: event.email,
           name: event.name,
+          email: event.email,
           password: event.password,
         ),
       );
+
       res.fold(
-        (failure) => emit(AuthFailure(failure.message)),
-        (uid) => emit(AuthSuccess(uid)),
+        (failure) {
+          emit(AuthFailure(failure.message));
+        },
+        (uid) {
+          emit(AuthSuccess(uid));
+        },
       );
     });
   }
