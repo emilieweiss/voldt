@@ -27,7 +27,55 @@ dev_dependencies:
   flutter_lints: ^5.0.0
 
 flutter:
-
   uses-material-design: true
 
+  assets:
+    - assets/fonts/
+
+  fonts:
+    - family: Omnes
+      fonts:
+        - asset: assets/fonts/Omnes Black.ttf
+          weight: 900
+        - asset: assets/fonts/Omnes Black Italic.ttf
+          weight: 900
+          style: italic
+        - asset: assets/fonts/Omnes Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Omnes Bold Italic.ttf
+          weight: 700
+          style: italic
+        - asset: assets/fonts/Omnes ExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/Omnes ExtraLight Italic.ttf
+          weight: 200
+          style: italic
+        - asset: assets/fonts/Omnes Hairline.ttf
+          weight: 100
+        - asset: assets/fonts/Omnes Hairline Italic.ttf
+          weight: 100
+          style: italic
+        - asset: assets/fonts/Omnes Italic.ttf
+          style: italic
+        - asset: assets/fonts/Omnes Light.ttf
+          weight: 300
+        - asset: assets/fonts/Omnes Light Italic.ttf
+          weight: 300
+          style: italic
+        - asset: assets/fonts/Omnes Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Omnes Medium Italic.ttf
+          weight: 500
+          style: italic
+        - asset: assets/fonts/Omnes Regular.ttf
+        - asset: assets/fonts/Omnes SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Omnes SemiBold Italic.ttf
+          weight: 600
+          style: italic
+        - asset: assets/fonts/Omnes Thin.ttf
+          weight: 100
+        - asset: assets/fonts/Omnes Thin Italic.ttf
+          weight: 100
+          style: italic
 
