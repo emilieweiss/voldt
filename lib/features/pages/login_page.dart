@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:voldt/core/theme/app_pallete.dart';
-import 'package:voldt/features/auth/presentation/widgets/auth_field.dart';
-import 'package:voldt/features/auth/presentation/widgets/auth_gradient_button.dart';
+import 'package:voldt/widgets/auth_field.dart';
+import 'package:voldt/widgets/auth_gradient_button.dart';
 
 class LogInPage extends StatefulWidget {
   const LogInPage({super.key});
