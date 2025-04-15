@@ -38,7 +38,7 @@ class JobCard extends StatelessWidget {
                         5,
                         5,
                         0,
-                        0,
+                        5,
                       ),
                       child: Text(
                         job['title'] ?? 'Job titel',
@@ -48,33 +48,49 @@ class JobCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Text(
-                      job['description'] ?? 'Beskrivelse',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey,
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        5,
+                        0,
+                        0,
+                        10,
+                      ),
+                      child: Text(
+                        job['description'] ?? 'Beskrivelse',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey,
+                        ),
                       ),
                     ),
                     Row(
                       children: [
-                        Icon(
-                          Icons.attach_money,
+                        SvgPicture.asset(
+                          'assets/icons/attach_money.svg',
                           color: Colors.grey,
-                          size: 25,
-                          weight: 100,
+                          height: 30,
+                          width: 30,
                         ),
-                        Icon(
-                          Icons.schedule,
+                        const SizedBox(width: 5),
+                        Text('100 kr'),
+                        const SizedBox(width: 20),
+                        SvgPicture.asset(
+                          'assets/icons/schedule.svg',
                           color: Colors.grey,
-                          size: 25,
-                          weight: 100,
+                          height: 30,
+                          width: 30,
                         ),
+                        const SizedBox(width: 10),
+                        Text('20 min'),
+                        const SizedBox(width: 20),
                         SvgPicture.asset(
                           'assets/icons/delivery_truck_speed.svg',
                           color: Colors.grey,
-                          height: 40,
-                          width: 40,
+                          height: 30,
+                          width: 30,
                         ),
+                        const SizedBox(width: 10),
+                        Text('11:45'),
                       ],
                     ),
                   ],
@@ -82,10 +98,11 @@ class JobCard extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.all(1),
-                child: Icon(
-                  Icons.arrow_forward_ios,
+                child: SvgPicture.asset(
+                  'assets/icons/arrow_forward.svg',
                   color: Colors.grey,
-                  size: 16.0,
+                  height: 25,
+                  width: 25,
                 ),
               ),
             ],
