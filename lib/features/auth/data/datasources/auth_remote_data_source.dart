@@ -1,13 +1,14 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:voldt/core/error/exception.dart';
+import 'package:voldt/features/auth/data/models/user_model.dart';
 
 abstract interface class AuthRemoteDataSource {
-  Future<String> signUpWithEmailAndPassword(
+  Future<UserModel> signUpWithEmailAndPassword(
     String name,
     String email,
     String password,
   );
-  Future<String> logInWithEmailAndPassword(
+  Future<UserModel> logInWithEmailAndPassword(
     String email,
     String password,
   );
@@ -20,7 +21,7 @@ class AuthRemoteDataSourceImpl
   AuthRemoteDataSourceImpl(this.supabaseClient);
 
   @override
-  Future<String> logInWithEmailAndPassword(
+  Future<UserModel> logInWithEmailAndPassword(
     String email,
     String password,
   ) {
@@ -29,7 +30,7 @@ class AuthRemoteDataSourceImpl
   }
 
   @override
-  Future<String> signUpWithEmailAndPassword(
+  Future<UserModel> signUpWithEmailAndPassword(
     String name,
     String email,
     String password,
@@ -43,7 +44,7 @@ class AuthRemoteDataSourceImpl
       if (response.user == null) {
         throw ServerException('User is null');
       }
-      return response.user!.id;
+      return UserModel.fromJson(response.user!.toJson());
     } catch (e) {
       throw ServerException(e.toString());
     }

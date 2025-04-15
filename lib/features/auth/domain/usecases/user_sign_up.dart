@@ -1,16 +1,17 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:voldt/core/error/failures.dart';
 import 'package:voldt/core/usecase/usecase.dart';
+import 'package:voldt/features/auth/domain/entitites/user.dart';
 import 'package:voldt/features/auth/domain/repository/auth_repository.dart';
 
 class UserSignUp
-    implements UseCase<String, UserSignUpParams> {
+    implements UseCase<User, UserSignUpParams> {
   final AuthRepository authRepository;
 
   const UserSignUp(this.authRepository);
 
   @override
-  Future<Either<Failure, String>> call(
+  Future<Either<Failure, User>> call(
     UserSignUpParams params,
   ) async {
     return await authRepository.signUpWithEmailAndPassword(

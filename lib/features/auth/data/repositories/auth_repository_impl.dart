@@ -1,5 +1,6 @@
 import 'package:voldt/core/error/exception.dart';
 import 'package:voldt/features/auth/data/datasources/auth_remote_data_source.dart';
+import 'package:voldt/features/auth/domain/entitites/user.dart';
 import 'package:voldt/features/auth/domain/repository/auth_repository.dart';
 import 'package:voldt/core/error/failures.dart';
 import 'package:fpdart/fpdart.dart';
@@ -9,7 +10,7 @@ class AuthRepositoryImpl implements AuthRepository {
   const AuthRepositoryImpl(this.remoteDataSource);
 
   @override
-  Future<Either<Failure, String>> logInWithEmailAndPassword(
+  Future<Either<Failure, User>> logInWithEmailAndPassword(
     String email,
     String password,
   ) {
@@ -17,8 +18,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, String>>
-  signUpWithEmailAndPassword(
+  Future<Either<Failure, User>> signUpWithEmailAndPassword(
     String name,
     String email,
     String password,

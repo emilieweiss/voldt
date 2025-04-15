@@ -1,16 +1,19 @@
 import 'package:go_router/go_router.dart';
 import 'package:voldt/features/pages/job_list_page.dart';
-//import 'package:voldt/features/pages/login_page.dart';
+import 'package:voldt/features/pages/login_page.dart';
 import 'package:voldt/features/pages/signup_page.dart';
 import 'package:voldt/features/pages/job_info_page.dart';
 
 final GoRouter appRouter = GoRouter(
   routes: [
+    // GoRoute(
+    //   path: '/',
+    //   builder: (context, state) => JobListPage(),
+    // ),
     GoRoute(
       path: '/',
-      builder: (context, state) => JobListPage(),
+      builder: (context, state) => LogInPage(),
     ),
-    //GoRoute(path: '/', builder: (context, state) => LogInPage()),
     GoRoute(
       path: '/signup',
       builder: (context, state) => SignUpPage(),
