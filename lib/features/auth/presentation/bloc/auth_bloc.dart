@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:voldt/features/auth/domain/entitites/user.dart';
 import 'package:voldt/features/auth/domain/usecases/user_sign_up.dart';
 
 part 'auth_event.dart';

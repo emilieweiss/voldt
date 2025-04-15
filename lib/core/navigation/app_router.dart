@@ -1,8 +1,8 @@
 import 'package:go_router/go_router.dart';
-import 'package:voldt/features/pages/job_list_page.dart';
-import 'package:voldt/features/pages/login_page.dart';
-import 'package:voldt/features/pages/signup_page.dart';
-import 'package:voldt/features/pages/job_info_page.dart';
+import 'package:voldt/pages/job_list_page.dart';
+import 'package:voldt/pages/login_page.dart';
+import 'package:voldt/pages/signup_page.dart';
+import 'package:voldt/pages/job_info_page.dart';
 
 final GoRouter appRouter = GoRouter(
   routes: [
