@@ -43,7 +43,7 @@ class _SignUpPageState extends State<LogInPage> {
           return Scaffold(
             body:
                 state is AuthLoading
-                    ? const Loader() // Sørger for, at Loader fylder hele skærmen
+                    ? const Loader()
                     : Padding(
                       padding: const EdgeInsets.all(15),
                       child: Form(
@@ -96,6 +96,7 @@ class _SignUpPageState extends State<LogInPage> {
                             const SizedBox(height: 20),
                             GestureDetector(
                               onTap: () {
+                                print('Sign up tapped');
                                 context.go('/signup');
                               },
                               child: RichText(

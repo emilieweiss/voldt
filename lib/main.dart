@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:voldt/core/common/cubit/app_user/app_user_cubit.dart';
-import 'package:voldt/core/theme/theme.dart';
 import 'package:voldt/core/navigation/app_router.dart';
+import 'package:voldt/core/theme/theme.dart';
 import 'package:voldt/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:voldt/init_dependencies.dart';
-import 'package:voldt/pages/job_list_page.dart';
-import 'package:voldt/pages/login_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,27 +35,18 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    context.read<AuthBloc>().add(AuthIsUserLoggedIn());
+    Future.microtask(() {
+      context.read<AuthBloc>().add(AuthIsUserLoggedIn());
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      //routerConfig: appRouter,
+    return MaterialApp.router(
+      routerConfig: appRouter,
       debugShowCheckedModeBanner: false,
       title: 'Voldt App',
       theme: AppTheme.lightThemeMode,
-      home: BlocSelector<AppUserCubit, AppUserState, bool>(
-        selector: (state) {
-          return state is AppUserLoggedIn;
-        },
-        builder: (context, isLoggedIn) {
-          if (isLoggedIn) {
-            return const JobListPage();
-          }
-          return const LogInPage();
-        },
-      ),
     );
   }
 }

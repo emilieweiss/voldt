@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:voldt/core/common/cubit/app_user/app_user_cubit.dart';
 import 'package:voldt/core/theme/app_pallete.dart';
 import 'package:voldt/widgets/job_card.dart';
 
@@ -24,6 +26,15 @@ class _JobListPageState extends State<JobListPage> {
           ),
         ),
         backgroundColor: AppPallete.woltBlue,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () {
+              context.read<AppUserCubit>().logOut();
+              context.go('/');
+            },
+          ),
+        ],
       ),
 
       body: Column(
