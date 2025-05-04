@@ -1,6 +1,6 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:voldt/core/error/failures.dart';
-import 'package:voldt/features/auth/domain/entitites/user.dart';
+import 'package:voldt/core/common/cubit/app_user/entitites/user.dart';
 
 abstract interface class AuthRepository {
   Future<Either<Failure, User>> signUpWithEmailAndPassword(

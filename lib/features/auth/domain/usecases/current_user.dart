@@ -1,7 +1,7 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:voldt/core/error/failures.dart';
 import 'package:voldt/core/usecase/usecase.dart';
-import 'package:voldt/features/auth/domain/entitites/user.dart';
+import 'package:voldt/core/common/cubit/app_user/entitites/user.dart';
 import 'package:voldt/features/auth/domain/repository/auth_repository.dart';
 
 class CurrentUser implements UseCase<User, NoParams> {

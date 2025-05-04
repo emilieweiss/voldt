@@ -1,4 +1,4 @@
-import 'package:voldt/features/auth/domain/entitites/user.dart';
+import 'package:voldt/core/common/cubit/app_user/entitites/user.dart';
 
 class UserModel extends User {
   UserModel({

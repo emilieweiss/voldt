@@ -1,6 +1,6 @@
 import 'package:voldt/core/error/exception.dart';
 import 'package:voldt/features/auth/data/datasources/auth_remote_data_source.dart';
-import 'package:voldt/features/auth/domain/entitites/user.dart';
+import 'package:voldt/core/common/cubit/app_user/entitites/user.dart';
 import 'package:voldt/features/auth/domain/repository/auth_repository.dart';
 import 'package:voldt/core/error/failures.dart';
 import 'package:fpdart/fpdart.dart';
