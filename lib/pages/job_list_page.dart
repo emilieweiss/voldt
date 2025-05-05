@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:voldt/core/common/cubit/app_user/app_user_cubit.dart';
 import 'package:voldt/core/theme/app_pallete.dart';
 import 'package:voldt/widgets/job_card.dart';
+import 'package:voldt/init_dependencies.dart';
 
 class JobListPage extends StatefulWidget {
   const JobListPage({super.key});
@@ -13,6 +15,27 @@ class JobListPage extends StatefulWidget {
 }
 
 class _JobListPageState extends State<JobListPage> {
+  List<Map<String, dynamic>> jobs = [];
+  bool loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchJobs();
+  }
+
+  Future<void> fetchJobs() async {
+    final supabase = serviceLocator<SupabaseClient>();
+    final response = await supabase.from('job').select();
+
+    print("Fetched jobs: $response"); // debug
+
+    setState(() {
+      jobs = List<Map<String, dynamic>>.from(response);
+      loading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,52 +59,27 @@ class _JobListPageState extends State<JobListPage> {
           ),
         ],
       ),
-
-      body: Column(
-        children: [
-          const SizedBox(height: 16),
-          Expanded(
-            child: ListView(
-              children: [
-                JobCard(
-                  job: {
-                    'title': 'Byg en dør',
-                    'description':
-                        'Byg en dør af rafter og plader.',
-                  },
-                  onTap: () {
-                    context.push(
-                      '/job-info',
-                      extra: {
-                        'title': 'Byg en dør',
-                        'description':
-                            'Byg en dør af rafter og plader.',
-                      },
-                    );
-                  },
-                ),
-                JobCard(
-                  job: {
-                    'title': 'Væg på bestilling',
-                    'description':
-                        'Væggen skal bygges af 2x4 og plader.',
-                  },
-                  onTap: () {
-                    context.push(
-                      '/job-info',
-                      extra: {
-                        'title': 'Væg på bestilling',
-                        'description':
-                            'Væggen skal bygges af 2x4 og plader.',
-                      },
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+      body:
+          loading
+              ? const Center(
+                child: CircularProgressIndicator(),
+              )
+              : jobs.isEmpty
+              ? const Center(
+                child: Text('Ingen opgaver endnu'),
+              )
+              : ListView.builder(
+                itemCount: jobs.length,
+                itemBuilder: (context, index) {
+                  final job = jobs[index];
+                  return JobCard(
+                    job: job,
+                    onTap: () {
+                      context.push('/job-info', extra: job);
+                    },
+                  );
+                },
+              ),
     );
   }
 }
