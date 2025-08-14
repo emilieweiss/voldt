@@ -11,26 +11,32 @@ class JobListPage extends StatefulWidget {
   const JobListPage({super.key});
 
   @override
-  _JobListPageState createState() => _JobListPageState();
+  JobListPageState createState() => JobListPageState();
 }
 
-class _JobListPageState extends State<JobListPage> {
+class JobListPageState extends State<JobListPage> {
   List<Map<String, dynamic>> jobs = [];
   bool loading = true;
+  RealtimeChannel? _jobsSub;
 
   @override
   void initState() {
     super.initState();
     fetchJobsForCurrentUser();
+    _subscribeToJobs();
+  }
+
+  @override
+  void dispose() {
+    _jobsSub?.unsubscribe();
+    super.dispose();
   }
 
   Future<void> fetchJobsForCurrentUser() async {
     try {
       final supabase = serviceLocator<SupabaseClient>();
-
-      // Tjek om der er en indlogget bruger
-      final currentUser = supabase.auth.currentUser;
-      if (currentUser == null) {
+      final user = supabase.auth.currentUser;
+      if (user == null) {
         setState(() {
           jobs = [];
           loading = false;
@@ -38,26 +44,117 @@ class _JobListPageState extends State<JobListPage> {
         return;
       }
 
-      final uid = supabase.auth.currentUser!.id;
+      final uid = user.id;
+
       final rows = await supabase
           .from('user_jobs')
           .select(
-            'id, job_id, title, description, address, duration, delivery, money, job_image_url, approved, solved',
+            // fjern image_url – den findes ikke på user_jobs
+            'id, job_id, title, description, address, duration, delivery, money, job_image_url, image_solved_url, approved, solved',
           )
-          .eq('user_id', uid);
+          .eq('user_id', uid)
+          .order('id', ascending: false);
+
+      // kompatibilitet: hvis dine widgets forventer 'image_url', så map til det
+      final list =
+          List<Map<String, dynamic>>.from(rows).map((r) {
+            final m = Map<String, dynamic>.from(r);
+            m['image_url'] ??=
+                m['job_image_url']; // fallback
+            return m;
+          }).toList();
+
+      // behold kun ikke-løste (solved == null eller false)
+      final filtered =
+          list.where((r) => r['solved'] != true).toList();
 
       setState(() {
-        jobs = List<Map<String, dynamic>>.from(
-          rows,
-        ); // giv JobCard felter fra user_jobs
+        jobs = filtered;
         loading = false;
       });
-    } catch (e) {
+    } catch (e, st) {
+      debugPrint('fetch ERROR: $e\n$st');
       setState(() {
         jobs = [];
         loading = false;
       });
     }
+  }
+
+  void _subscribeToJobs() {
+    final supabase = serviceLocator<SupabaseClient>();
+    final uid = supabase.auth.currentUser?.id;
+    if (uid == null) {
+      debugPrint('realtime: no uid, not subscribing');
+      return;
+    }
+
+    _jobsSub =
+        supabase
+            .channel('user_jobs-$uid')
+            // INSERT -> hent igen
+            .onPostgresChanges(
+              event: PostgresChangeEvent.insert,
+              schema: 'public',
+              table: 'user_jobs',
+              filter: PostgresChangeFilter(
+                type: PostgresChangeFilterType.eq,
+                column: 'user_id',
+                value: uid,
+              ),
+              callback: (payload) {
+                debugPrint(
+                  'realtime INSERT: ${payload.newRecord}',
+                );
+                fetchJobsForCurrentUser();
+              },
+            )
+            // UPDATE -> fjern hvis solved blev true, ellers hent igen
+            .onPostgresChanges(
+              event: PostgresChangeEvent.update,
+              schema: 'public',
+              table: 'user_jobs',
+              filter: PostgresChangeFilter(
+                type: PostgresChangeFilterType.eq,
+                column: 'user_id',
+                value: uid,
+              ),
+              callback: (payload) {
+                final row = payload.newRecord;
+                debugPrint('realtime UPDATE: $row');
+                if (row != null && row['solved'] == true) {
+                  setState(() {
+                    jobs.removeWhere(
+                      (j) => j['id'] == row['id'],
+                    );
+                  });
+                } else {
+                  fetchJobsForCurrentUser();
+                }
+              },
+            )
+            // DELETE -> hent igen
+            .onPostgresChanges(
+              event: PostgresChangeEvent.delete,
+              schema: 'public',
+              table: 'user_jobs',
+              filter: PostgresChangeFilter(
+                type: PostgresChangeFilterType.eq,
+                column: 'user_id',
+                value: uid,
+              ),
+              callback: (payload) {
+                debugPrint(
+                  'realtime DELETE: ${payload.oldRecord}',
+                );
+                fetchJobsForCurrentUser();
+              },
+            )
+            .subscribe();
+
+    debugPrint(
+      'realtime: subscribed on channel user_jobs-$uid',
+    );
   }
 
   @override
@@ -81,12 +178,15 @@ class _JobListPageState extends State<JobListPage> {
               : ListView.builder(
                 itemCount: jobs.length,
                 itemBuilder: (context, index) {
-                  final job = jobs[index];
+                  final job =
+                      jobs[index]; // user_jobs-række
                   return JobCard(
                     job: job,
-                    onTap: () {
-                      context.push('/job-info', extra: job);
-                    },
+                    onTap:
+                        () => context.push(
+                          '/job-info',
+                          extra: job,
+                        ),
                   );
                 },
               ),
