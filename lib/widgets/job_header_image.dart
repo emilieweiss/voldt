@@ -16,8 +16,9 @@ class JobHeaderImage extends StatelessWidget {
     final raw =
         (job['image_url'] ?? job['job_image_url'])
             ?.toString();
-    if (raw == null || raw.isEmpty)
+    if (raw == null || raw.isEmpty) {
       return const SizedBox.shrink();
+    }
 
     final url =
         raw.startsWith('http')
