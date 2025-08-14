@@ -1,10 +1,21 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:voldt/core/theme/app_pallete.dart';
+import 'package:voldt/init_dependencies.dart';
 
 class FinishJobDialog extends StatefulWidget {
   final String title;
-  const FinishJobDialog({super.key, required this.title});
+  final Map<String, dynamic> job; // <-- til update
+  final String bucket;
+  const FinishJobDialog({
+    super.key,
+    required this.title,
+    required this.job,
+    this.bucket =
+        'job-images', // byt hvis dit bucket hedder noget andet
+  });
 
   @override
   State<FinishJobDialog> createState() =>
@@ -14,6 +25,7 @@ class FinishJobDialog extends StatefulWidget {
 class _FinishJobDialogState extends State<FinishJobDialog> {
   final _picker = ImagePicker();
   XFile? _file;
+  bool _loading = false;
 
   Future<void> _pick() async {
     final f = await _picker.pickImage(
@@ -22,6 +34,60 @@ class _FinishJobDialogState extends State<FinishJobDialog> {
     );
     if (!mounted) return;
     setState(() => _file = f);
+  }
+
+  String _ext(XFile f) =>
+      f.name.contains('.')
+          ? f.name.substring(f.name.lastIndexOf('.'))
+          : '.jpg';
+
+  Future<void> _submit() async {
+    if (_file == null || _loading) return;
+    setState(() => _loading = true);
+
+    try {
+      final supabase = serviceLocator<SupabaseClient>();
+      final uid = supabase.auth.currentUser!.id;
+      final jobId =
+          widget.job['job_id'] ?? widget.job['id'];
+
+      final path =
+          'solved/$uid/${jobId}_${DateTime.now().millisecondsSinceEpoch}${_ext(_file!)}';
+      await supabase.storage
+          .from(widget.bucket)
+          .upload(
+            path,
+            File(_file!.path),
+            fileOptions: const FileOptions(
+              cacheControl: '3600',
+              upsert: false,
+            ),
+          );
+
+      final publicUrl = supabase.storage
+          .from(widget.bucket)
+          .getPublicUrl(path);
+
+      await supabase
+          .from('user_jobs')
+          .update({
+            'solved': true,
+            'approved': false,
+            'image_solved_url':
+                publicUrl, // gem evt. 'path' i stedet, hvis bucketen er privat
+          })
+          .eq('user_id', uid)
+          .eq('job_id', jobId);
+
+      if (!mounted) return;
+      Navigator.of(context).pop<bool>(true); // succes
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Fejl: $e')));
+      setState(() => _loading = false);
+    }
   }
 
   @override
@@ -60,8 +126,9 @@ class _FinishJobDialogState extends State<FinishJobDialog> {
                   IconButton(
                     icon: const Icon(Icons.close),
                     onPressed:
-                        () =>
-                            Navigator.of(context).pop(null),
+                        () => Navigator.of(
+                          context,
+                        ).pop(false),
                   ),
                 ],
               ),
@@ -128,17 +195,12 @@ class _FinishJobDialogState extends State<FinishJobDialog> {
                     ),
                   ),
                   onPressed:
-                      _file == null
+                      (_file == null || _loading)
                           ? null
-                          : () {
-                            // returner valgt fil til kaldende side
-                            Navigator.of(
-                              context,
-                            ).pop<XFile?>(_file);
-                          },
-                  child: const Text(
-                    'Aflever nu',
-                    style: TextStyle(
+                          : _submit,
+                  child: Text(
+                    _loading ? 'Afleverer…' : 'Aflever nu',
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,

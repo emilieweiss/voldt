@@ -97,15 +97,23 @@ class JobInfoPage extends StatelessWidget {
               ),
             ),
             onPressed: () async {
-              final picked = await showDialog<XFile?>(
+              final ok = await showDialog<bool>(
                 context: context,
                 barrierDismissible: false,
                 builder:
-                    (_) => FinishJobDialog(title: title),
+                    (_) => FinishJobDialog(
+                      title: title,
+                      job: job,
+                    ),
               );
 
-              if (picked != null) {
-                // TODO upload til Supabase Storage og markér user_jobs.solved = true
+              if (ok == true && context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Opgave afleveret'),
+                  ),
+                );
+                // valgfrit: Navigator.of(context).maybePop();
               }
             },
             child: const Text(
