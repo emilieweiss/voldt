@@ -45,5 +45,11 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	  <key>NSPhotoLibraryUsageDescription</key>
+  <string>Behov for at vælge billedet som bevis</string>
+  <key>NSCameraUsageDescription</key>
+  <string>Behov for at tage billede som bevis</string>
+  <key>NSPhotoLibraryAddUsageDescription</key>
+  <string>Behov for at gemme billedet</string>
 </dict>
 </plist>
