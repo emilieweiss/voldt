@@ -21,19 +21,47 @@ class _JobListPageState extends State<JobListPage> {
   @override
   void initState() {
     super.initState();
-    fetchJobs();
+    fetchJobsForCurrentUser();
   }
 
-  Future<void> fetchJobs() async {
-    final supabase = serviceLocator<SupabaseClient>();
-    final response = await supabase.from('job').select();
+  Future<void> fetchJobsForCurrentUser() async {
+    try {
+      final supabase = serviceLocator<SupabaseClient>();
 
-    print("Fetched jobs: $response"); // debug
+      // Tjek om der er en indlogget bruger
+      final currentUser = supabase.auth.currentUser;
+      if (currentUser == null) {
+        setState(() {
+          jobs = [];
+          loading = false;
+        });
+        return;
+      }
 
-    setState(() {
-      jobs = List<Map<String, dynamic>>.from(response);
-      loading = false;
-    });
+      final uid = currentUser.id;
+      final rows = await supabase
+          .from('user_jobs')
+          .select('*, job(*)')
+          .eq('user_id', uid);
+
+      final mappedJobs =
+          List<Map<String, dynamic>>.from(
+            rows.map(
+              (r) =>
+                  Map<String, dynamic>.from(r['job'] ?? {}),
+            ),
+          ).where((j) => j.isNotEmpty).toList();
+
+      setState(() {
+        jobs = mappedJobs;
+        loading = false;
+      });
+    } catch (e) {
+      setState(() {
+        jobs = [];
+        loading = false;
+      });
+    }
   }
 
   @override
