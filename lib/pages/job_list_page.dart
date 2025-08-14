@@ -38,22 +38,18 @@ class _JobListPageState extends State<JobListPage> {
         return;
       }
 
-      final uid = currentUser.id;
+      final uid = supabase.auth.currentUser!.id;
       final rows = await supabase
           .from('user_jobs')
-          .select('*, job(*)')
+          .select(
+            'id, job_id, title, description, address, duration, delivery, money, job_image_url, approved, solved',
+          )
           .eq('user_id', uid);
 
-      final mappedJobs =
-          List<Map<String, dynamic>>.from(
-            rows.map(
-              (r) =>
-                  Map<String, dynamic>.from(r['job'] ?? {}),
-            ),
-          ).where((j) => j.isNotEmpty).toList();
-
       setState(() {
-        jobs = mappedJobs;
+        jobs = List<Map<String, dynamic>>.from(
+          rows,
+        ); // giv JobCard felter fra user_jobs
         loading = false;
       });
     } catch (e) {
