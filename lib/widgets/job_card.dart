@@ -53,9 +53,7 @@ class JobCard extends StatelessWidget {
             14,
           ),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Venstre: tekst + info
               Expanded(
                 child: Column(
                   crossAxisAlignment:
@@ -151,8 +149,7 @@ class JobCard extends StatelessWidget {
                 ),
               ),
 
-              const Padding(
-                padding: EdgeInsets.only(top: 6),
+              Center(
                 child: Icon(
                   Icons.arrow_forward_ios,
                   color: Colors.black38,
