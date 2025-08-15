@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:voldt/core/theme/app_pallete.dart';
 import 'package:voldt/init_dependencies.dart';
+import 'package:voldt/pages/job_success_delivery_page.dart';
 
 class FinishJobDialog extends StatefulWidget {
   final String title;
@@ -41,10 +42,9 @@ class _FinishJobDialogState extends State<FinishJobDialog> {
           ? f.name.substring(f.name.lastIndexOf('.'))
           : '.jpg';
 
-  Future<void> _submit() async {
-    if (_file == null || _loading) return;
+  Future<bool> _submit() async {
+    if (_file == null || _loading) return false;
     setState(() => _loading = true);
-
     try {
       final supabase = serviceLocator<SupabaseClient>();
       final uid = supabase.auth.currentUser!.id;
@@ -53,15 +53,13 @@ class _FinishJobDialogState extends State<FinishJobDialog> {
 
       final path =
           'solved/$uid/${jobId}_${DateTime.now().millisecondsSinceEpoch}${_ext(_file!)}';
+
       await supabase.storage
           .from(widget.bucket)
           .upload(
             path,
             File(_file!.path),
-            fileOptions: const FileOptions(
-              cacheControl: '3600',
-              upsert: false,
-            ),
+            fileOptions: const FileOptions(upsert: false),
           );
 
       final publicUrl = supabase.storage
@@ -73,20 +71,21 @@ class _FinishJobDialogState extends State<FinishJobDialog> {
           .update({
             'solved': true,
             'approved': false,
-            'image_solved_url':
-                publicUrl, // gem evt. 'path' i stedet, hvis bucketen er privat
+            'image_solved_url': publicUrl,
           })
           .eq('user_id', uid)
           .eq('job_id', jobId);
 
-      if (!mounted) return;
-      Navigator.of(context).pop<bool>(true); // succes
+      return true;
     } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Fejl: $e')));
-      setState(() => _loading = false);
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Fejl: $e')));
+      }
+      return false;
+    } finally {
+      if (mounted) setState(() => _loading = false);
     }
   }
 
@@ -197,7 +196,25 @@ class _FinishJobDialogState extends State<FinishJobDialog> {
                   onPressed:
                       (_file == null || _loading)
                           ? null
-                          : _submit,
+                          : () async {
+                            final ok = await _submit();
+                            if (!mounted || !ok) return;
+
+                            // Luk dialogen
+                            Navigator.of(context).pop();
+
+                            // Og åbn bekræftelsessiden
+                            Navigator.of(
+                              context,
+                              rootNavigator: true,
+                            ).push(
+                              MaterialPageRoute(
+                                builder:
+                                    (_) =>
+                                        const JobSuccessDeliveryPage(),
+                              ),
+                            );
+                          },
                   child: Text(
                     _loading ? 'Afleverer…' : 'Aflever nu',
                     style: const TextStyle(

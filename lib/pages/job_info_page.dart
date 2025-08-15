@@ -6,7 +6,6 @@ import 'package:voldt/core/theme/app_pallete.dart';
 import 'package:voldt/widgets/app_bar.dart';
 import 'package:voldt/widgets/job_header_image.dart';
 import 'package:voldt/widgets/finish_job_dialog.dart';
-import 'package:image_picker/image_picker.dart';
 
 class JobInfoPage extends StatelessWidget {
   final Map<String, dynamic> job;
@@ -113,7 +112,6 @@ class JobInfoPage extends StatelessWidget {
                     content: Text('Opgave afleveret'),
                   ),
                 );
-                // valgfrit: Navigator.of(context).maybePop();
               }
             },
             child: const Text(

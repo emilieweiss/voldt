@@ -49,22 +49,21 @@ class JobListPageState extends State<JobListPage> {
       final rows = await supabase
           .from('user_jobs')
           .select(
-            // fjern image_url – den findes ikke på user_jobs
+            // fjern image_url, findes ikke på user_jobs
             'id, job_id, title, description, address, duration, delivery, money, job_image_url, image_solved_url, approved, solved',
           )
           .eq('user_id', uid)
           .order('id', ascending: false);
 
-      // kompatibilitet: hvis dine widgets forventer 'image_url', så map til det
+      // kompatibilitet: hvis widgets forventer 'image_url'
       final list =
           List<Map<String, dynamic>>.from(rows).map((r) {
             final m = Map<String, dynamic>.from(r);
-            m['image_url'] ??=
-                m['job_image_url']; // fallback
+            m['image_url'] ??= m['job_image_url'];
             return m;
           }).toList();
 
-      // behold kun ikke-løste (solved == null eller false)
+      // Check for (solved == null eller false)
       final filtered =
           list.where((r) => r['solved'] != true).toList();
 
@@ -92,7 +91,6 @@ class JobListPageState extends State<JobListPage> {
     _jobsSub =
         supabase
             .channel('user_jobs-$uid')
-            // INSERT -> hent igen
             .onPostgresChanges(
               event: PostgresChangeEvent.insert,
               schema: 'public',
