@@ -20,7 +20,7 @@ class JobSuccessDeliveryPage extends StatelessWidget {
               const Spacer(),
               Image.asset(
                 'assets/job_finished.png',
-                width: 260,
+                width: 300,
                 fit: BoxFit.contain,
               ),
               const SizedBox(height: 24),
@@ -57,7 +57,6 @@ class JobSuccessDeliveryPage extends StatelessWidget {
                     ),
                   ),
                   onPressed: () {
-                    // Tilbage til job-listen (pop alt indtil første skærm)
                     Navigator.of(
                       context,
                     ).popUntil((r) => r.isFirst);
