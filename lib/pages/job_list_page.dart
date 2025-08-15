@@ -176,8 +176,10 @@ class JobListPageState extends State<JobListPage> {
               : ListView.builder(
                 itemCount: jobs.length,
                 itemBuilder: (context, index) {
-                  final job =
-                      jobs[index]; // user_jobs-række
+                  if (index == 0) {
+                    return const SizedBox(height: 10);
+                  }
+                  final job = jobs[index - 1];
                   return JobCard(
                     job: job,
                     onTap:
