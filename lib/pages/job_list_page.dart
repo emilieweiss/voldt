@@ -174,7 +174,7 @@ class JobListPageState extends State<JobListPage> {
                 child: Text('Ingen opgaver endnu'),
               )
               : ListView.builder(
-                itemCount: jobs.length,
+                itemCount: jobs.length + 1,
                 itemBuilder: (context, index) {
                   if (index == 0) {
                     return const SizedBox(height: 10);
