@@ -8,14 +8,13 @@ import 'package:voldt/pages/job_success_delivery_page.dart';
 
 class FinishJobDialog extends StatefulWidget {
   final String title;
-  final Map<String, dynamic> job; // <-- til update
+  final Map<String, dynamic> job;
   final String bucket;
   const FinishJobDialog({
     super.key,
     required this.title,
     required this.job,
-    this.bucket =
-        'job-images', // byt hvis dit bucket hedder noget andet
+    this.bucket = 'job-images',
   });
 
   @override
@@ -28,9 +27,9 @@ class _FinishJobDialogState extends State<FinishJobDialog> {
   XFile? _file;
   bool _loading = false;
 
-  Future<void> _pick() async {
+  Future<void> _pickFromCamera() async {
     final f = await _picker.pickImage(
-      source: ImageSource.gallery,
+      source: ImageSource.camera,
       imageQuality: 85,
     );
     if (!mounted) return;
@@ -42,15 +41,28 @@ class _FinishJobDialogState extends State<FinishJobDialog> {
           ? f.name.substring(f.name.lastIndexOf('.'))
           : '.jpg';
 
+  DateTime _deliveryToday() {
+    final raw =
+        widget.job['delivery']?.toString() ?? '00:00';
+    final p = raw.split(':');
+    final now = DateTime.now();
+    final h = int.tryParse(p.isNotEmpty ? p[0] : '0') ?? 0;
+    final m = int.tryParse(p.length > 1 ? p[1] : '0') ?? 0;
+    return DateTime(now.year, now.month, now.day, h, m);
+  }
+
+  bool get _isOverdue =>
+      DateTime.now().isAfter(_deliveryToday());
+
   Future<bool> _submit() async {
-    if (_file == null || _loading) return false;
+    if (_file == null || _loading || _isOverdue)
+      return false;
     setState(() => _loading = true);
     try {
       final supabase = serviceLocator<SupabaseClient>();
       final uid = supabase.auth.currentUser!.id;
       final jobId =
           widget.job['job_id'] ?? widget.job['id'];
-
       final path =
           'solved/$uid/${jobId}_${DateTime.now().millisecondsSinceEpoch}${_ext(_file!)}';
 
@@ -133,16 +145,18 @@ class _FinishJobDialogState extends State<FinishJobDialog> {
               ),
               const SizedBox(height: 4),
               const Text(
-                'OBS! Før opgaven kan afleveres, skal der uploades et billede som bevis for at opgaven er afleveret på den rigtige adresse.',
+                'OBS! Før opgaven kan afleveres, skal der tages/uploades et billede som bevis.',
                 style: TextStyle(
                   color: Colors.black87,
                   height: 1.3,
                 ),
               ),
               const SizedBox(height: 20),
+
               Center(
                 child: InkWell(
-                  onTap: _pick,
+                  onTap:
+                      _pickFromCamera, // åbner kameraet direkte
                   borderRadius: BorderRadius.circular(60),
                   child: Container(
                     width: 96,
@@ -154,7 +168,7 @@ class _FinishJobDialogState extends State<FinishJobDialog> {
                       ),
                     ),
                     child: const Icon(
-                      Icons.add,
+                      Icons.photo_camera,
                       size: 42,
                       color: AppPallete.woltBlue,
                     ),
@@ -162,8 +176,11 @@ class _FinishJobDialogState extends State<FinishJobDialog> {
                 ),
               ),
               const SizedBox(height: 8),
-              const Center(child: Text('Upload billede')),
+              const Center(
+                child: Text('Tag foto med kamera'),
+              ),
               const SizedBox(height: 12),
+
               if (_file != null)
                 Row(
                   children: [
@@ -181,12 +198,16 @@ class _FinishJobDialogState extends State<FinishJobDialog> {
                   ],
                 ),
               const SizedBox(height: 20),
+
               SizedBox(
                 width: double.infinity,
                 height: 52,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppPallete.woltBlue,
+                    backgroundColor:
+                        _isOverdue
+                            ? Colors.grey
+                            : AppPallete.woltBlue,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(
                         14,
@@ -194,16 +215,14 @@ class _FinishJobDialogState extends State<FinishJobDialog> {
                     ),
                   ),
                   onPressed:
-                      (_file == null || _loading)
+                      (_file == null ||
+                              _loading ||
+                              _isOverdue)
                           ? null
                           : () async {
                             final ok = await _submit();
                             if (!mounted || !ok) return;
-
-                            // Luk dialogen
                             Navigator.of(context).pop();
-
-                            // Og åbn bekræftelsessiden
                             Navigator.of(
                               context,
                               rootNavigator: true,
@@ -216,7 +235,11 @@ class _FinishJobDialogState extends State<FinishJobDialog> {
                             );
                           },
                   child: Text(
-                    _loading ? 'Afleverer…' : 'Aflever nu',
+                    _isOverdue
+                        ? 'Frist overskredet'
+                        : (_loading
+                            ? 'Afleverer…'
+                            : 'Aflever nu'),
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,

@@ -20,6 +20,7 @@ class VoldtAppBar extends StatelessWidget
   Widget build(BuildContext context) {
     return AppBar(
       automaticallyImplyLeading: showBack,
+      centerTitle: true,
       title: const Text(
         'voldt',
         style: TextStyle(
@@ -32,7 +33,10 @@ class VoldtAppBar extends StatelessWidget
       actions: [
         if (onLogout != null)
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: const Icon(
+              Icons.logout,
+              color: Colors.black,
+            ),
             onPressed: onLogout,
           ),
       ],

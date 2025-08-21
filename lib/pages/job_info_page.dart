@@ -9,7 +9,6 @@ import 'package:voldt/widgets/finish_job_dialog.dart';
 
 class JobInfoPage extends StatelessWidget {
   final Map<String, dynamic> job;
-
   const JobInfoPage({super.key, required this.job});
 
   @override
@@ -22,8 +21,7 @@ class JobInfoPage extends StatelessWidget {
     final address = (job['address'] ?? 'Ukendt').toString();
     final durationTxt = _formatDuration(job['duration']);
     final deliveryTxt = _formatDelivery(job['delivery']);
-    final pointsTxt =
-        'Løn ${_formatPoints(job['money'])}kr.';
+    final pay = _formatPoints(job['money']);
 
     return Scaffold(
       appBar: VoldtAppBar(
@@ -37,12 +35,14 @@ class JobInfoPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             JobHeaderImage(job: job),
+
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment:
                     CrossAxisAlignment.start,
                 children: [
+                  // Titel
                   Text(
                     title,
                     style: const TextStyle(
@@ -50,15 +50,46 @@ class JobInfoPage extends StatelessWidget {
                       fontWeight: FontWeight.w800,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    pointsTxt,
-                    style: const TextStyle(
-                      color: Colors.black54,
+
+                  const SizedBox(height: 8),
+
+                  // Tydelig løn-badge
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppPallete.woltBlue
+                          .withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(
+                        12,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.attach_money,
+                          size: 20,
+                          color: AppPallete.woltBlue,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          '$pay kr',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: AppPallete.woltBlue,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
+
                   const SizedBox(height: 16),
                   const Divider(),
+
                   const SizedBox(height: 8),
                   const Text(
                     'Opgavebeskrivelse',
@@ -72,11 +103,19 @@ class JobInfoPage extends StatelessWidget {
                     description,
                     style: const TextStyle(height: 1.4),
                   ),
+
                   const SizedBox(height: 16),
                   const Divider(),
-                  const SizedBox(height: 8),
+
+                  // Infofelter med streger imellem og god wrapping
                   _KV('Leveringstidspunkt', deliveryTxt),
-                  _KV('Adresse', address),
+                  const Divider(height: 20),
+                  _KV(
+                    'Adresse',
+                    address,
+                    multilineValue: true,
+                  ),
+                  const Divider(height: 20),
                   _KV('Estimat', durationTxt),
                 ],
               ),
@@ -84,8 +123,11 @@ class JobInfoPage extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 8, 20, 30),
+
+      // Knappen fri af bottom nav via SafeArea
+      bottomNavigationBar: SafeArea(
+        top: false,
+        minimum: const EdgeInsets.fromLTRB(20, 8, 20, 16),
         child: SizedBox(
           height: 56,
           child: ElevatedButton(
@@ -158,22 +200,43 @@ String _formatPoints(dynamic v) {
 
 class _KV extends StatelessWidget {
   final String k, v;
-  const _KV(this.k, this.v);
+  final bool multilineValue;
+  const _KV(this.k, this.v, {this.multilineValue = false});
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          // venstre label (én linje, ellipsis)
           Expanded(
+            flex: 3,
             child: Text(
               k,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 fontWeight: FontWeight.w700,
               ),
             ),
           ),
-          Text(v, textAlign: TextAlign.right),
+          const SizedBox(width: 12),
+          // højre værdi (altid højrejusteret)
+          Expanded(
+            flex: 5,
+            child: Text(
+              v,
+              textAlign: TextAlign.right,
+              softWrap: multilineValue,
+              maxLines: multilineValue ? null : 1,
+              overflow:
+                  multilineValue
+                      ? TextOverflow.visible
+                      : TextOverflow.ellipsis,
+            ),
+          ),
         ],
       ),
     );
