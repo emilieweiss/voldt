@@ -127,7 +127,7 @@ class JobInfoPage extends StatelessWidget {
       // Knappen fri af bottom nav via SafeArea
       bottomNavigationBar: SafeArea(
         top: false,
-        minimum: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+        minimum: const EdgeInsets.fromLTRB(20, 8, 20, 30),
         child: SizedBox(
           height: 56,
           child: ElevatedButton(

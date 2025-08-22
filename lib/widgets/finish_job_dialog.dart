@@ -61,10 +61,9 @@ class _FinishJobDialogState extends State<FinishJobDialog> {
     try {
       final supabase = serviceLocator<SupabaseClient>();
       final uid = supabase.auth.currentUser!.id;
-      final jobId =
-          widget.job['job_id'] ?? widget.job['id'];
+      final int userJobId = widget.job['id'];
       final path =
-          'solved/$uid/${jobId}_${DateTime.now().millisecondsSinceEpoch}${_ext(_file!)}';
+          'solved/$uid/${userJobId}_${DateTime.now().millisecondsSinceEpoch}${_ext(_file!)}';
 
       await supabase.storage
           .from(widget.bucket)
@@ -78,6 +77,7 @@ class _FinishJobDialogState extends State<FinishJobDialog> {
           .from(widget.bucket)
           .getPublicUrl(path);
 
+      // VIGTIGT: opdater præcis én række
       await supabase
           .from('user_jobs')
           .update({
@@ -85,8 +85,8 @@ class _FinishJobDialogState extends State<FinishJobDialog> {
             'approved': false,
             'image_solved_url': publicUrl,
           })
-          .eq('user_id', uid)
-          .eq('job_id', jobId);
+          .eq('user_id', uid) // ekstra sikkerhed
+          .eq('id', userJobId); // <- brug PK, ikke job_id
 
       return true;
     } catch (e) {
