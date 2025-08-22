@@ -55,8 +55,9 @@ class _FinishJobDialogState extends State<FinishJobDialog> {
       DateTime.now().isAfter(_deliveryToday());
 
   Future<bool> _submit() async {
-    if (_file == null || _loading || _isOverdue)
+    if (_file == null || _loading || _isOverdue) {
       return false;
+    }
     setState(() => _loading = true);
     try {
       final supabase = serviceLocator<SupabaseClient>();
@@ -222,8 +223,10 @@ class _FinishJobDialogState extends State<FinishJobDialog> {
                           : () async {
                             final ok = await _submit();
                             if (!mounted || !ok) return;
+                            // ignore: use_build_context_synchronously
                             Navigator.of(context).pop();
                             Navigator.of(
+                              // ignore: use_build_context_synchronously
                               context,
                               rootNavigator: true,
                             ).push(

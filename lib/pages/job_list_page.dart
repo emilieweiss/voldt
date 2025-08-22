@@ -53,7 +53,7 @@ class JobListPageState extends State<JobListPage> {
             'id, job_id, title, description, address, duration, delivery, money, job_image_url, image_solved_url, approved, solved',
           )
           .eq('user_id', uid)
-          .order('id', ascending: false);
+          .order('id', ascending: true);
 
       // kompatibilitet: hvis widgets forventer 'image_url'
       final list =
